@@ -1,7 +1,7 @@
 <template>
-  <!-- Collapsible Sidebar -->
+  <!-- Collapsible Sidebar (hidden on mobile) -->
   <aside 
-    class="bg-gray-900 border-r border-gray-800 fixed left-0 top-0 h-full z-50 transition-all duration-300"
+    class="bg-gray-900 border-r border-gray-800 fixed left-0 top-0 h-full z-50 transition-all duration-300 hidden md:block"
     :class="isCollapsed ? 'w-20' : 'w-64'"
   >
     <div class="flex flex-col h-full p-4">
@@ -56,10 +56,66 @@
     </div>
   </aside>
 
+  <!-- Mobile Header Bar -->
+  <header class="bg-gray-900 border-b border-gray-800 fixed top-0 left-0 right-0 z-50 md:hidden">
+    <div class="flex items-center justify-between px-4 py-3">
+      <!-- Mobile Logo -->
+      <NuxtLink to="/" class="overflow-hidden">
+        <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-500">
+          Neflixify
+        </span>
+      </NuxtLink>
+      
+      <div class="flex items-center space-x-4">
+        <!-- Mobile Search Button -->
+        <button 
+          @click="toggleSearch"
+          class="p-2 text-gray-400 hover:text-white rounded-lg"
+        >
+          <MagnifyingGlassIcon class="w-6 h-6" />
+        </button>
+        
+        <!-- Mobile Hamburger Menu Button -->
+        <button 
+          @click="isMobileMenuOpen = !isMobileMenuOpen"
+          class="p-2 text-gray-400 hover:text-white rounded-lg"
+          aria-label="Menu"
+        >
+          <Bars3Icon v-if="!isMobileMenuOpen" class="w-6 h-6" />
+          <XMarkIcon v-else class="w-6 h-6" />
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu Dropdown -->
+    <div 
+      v-if="isMobileMenuOpen" 
+      class="absolute top-full left-0 right-0 bg-gray-900 border-b border-gray-800 py-4 shadow-lg"
+    >
+      <nav>
+        <NuxtLink
+          v-for="link in navLinks"
+          :key="link.name"
+          :to="link.path"
+          class="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          :class="$route.path === link.path ? 'text-blue-400' : 'text-gray-400'"
+          @click="isMobileMenuOpen = false"
+        >
+          <component :is="link.icon" class="w-5 h-5 mr-3" />
+          <span>{{ link.name }}</span>
+        </NuxtLink>
+      </nav>
+    </div>
+  </header>
+
   <!-- Main Content Area -->
   <div 
-    class="transition-all duration-300"
-    :class="isCollapsed ? 'ml-20' : 'ml-64'"
+    class="transition-all duration-300 pt-0 md:pt-0"
+    :class="{
+      'md:ml-20': isCollapsed,
+      'md:ml-64': !isCollapsed,
+      'mt-16': true, // Add margin top for mobile header
+    }"
   >
     <!-- Search Overlay -->
     <div v-if="showSearch" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-40">
@@ -92,7 +148,8 @@ import {
   ChartBarIcon,
   MagnifyingGlassIcon,
   ChevronLeftIcon,
-  XMarkIcon
+  XMarkIcon,
+  Bars3Icon // Added for hamburger menu
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -103,13 +160,35 @@ const navLinks = [
   { name: 'Top Rated', path: '/top-rated', icon: ChartBarIcon }
 ]
 
-// Set initial state to collapsed
+// Responsive states
 const isCollapsed = ref(true)
 const showSearch = ref(false)
+const isMobileMenuOpen = ref(false)
 
 const toggleSearch = () => {
   showSearch.value = !showSearch.value
+  // Close mobile menu if open
+  if (isMobileMenuOpen.value) {
+    isMobileMenuOpen.value = false
+  }
 }
+
+// Close mobile menu when screen size changes to desktop
+const handleResize = () => {
+  if (window.innerWidth >= 768 && isMobileMenuOpen.value) {
+    isMobileMenuOpen.value = false
+  }
+}
+
+// Add resize event listener
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+// Clean up event listener
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <style>
@@ -122,5 +201,17 @@ const toggleSearch = () => {
 /* Hide scrollbar but keep functionality */
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* Mobile menu transition */
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.mobile-menu-enter-from,
+.mobile-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>
