@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white">
+  <div class="min-h-screen bg-gray-900 text-white flex flex-col">
     <Header />
 
-    <main class="container mx-auto px-4 py-8">
+    <main class="flex-1 container mx-auto px-4 py-8">
       <!-- Trending Movies Carousel Section -->
       <section class="mb-12">
         <h2 class="text-2xl font-semibold mb-6">Trending Now</h2>
@@ -12,7 +12,13 @@
         <div v-else-if="trendingError" class="bg-red-500 text-white p-4 rounded">
           Error loading trending movies: {{ trendingError.message }}
         </div>
-        <TrendingMoviesCarousel v-else-if="trendingMovies?.results?.length" :movies="trendingMovies.results" />
+        <TrendingMoviesCarousel 
+          v-else-if="trendingMovies?.results?.length" 
+          :movies="trendingMovies.results.map(movie => ({ 
+            ...movie, 
+            overview: movie.overview || '' 
+          }))" 
+        />
         <div v-else class="text-center py-12 text-gray-400">
           No trending movies found
         </div>
@@ -20,14 +26,14 @@
 
       <!-- Popular Movies Section -->
       <section>
-        <h2 class="text-2xl font-semibold mb-6">Popular Movies</h2>
+        <h2 class="text-2xl font-semibold mb-5">Popular Movies</h2>
         <div v-if="pending" class="flex justify-center items-center h-64">
           <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
         <div v-else-if="error" class="bg-red-500 text-white p-4 rounded">
           Error loading movies: {{ error.message }}
         </div>
-        <div v-else-if="movies?.results?.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div v-else-if="movies?.results?.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
           <div 
             v-for="movie in movies.results" 
             :key="movie.id" 
@@ -75,3 +81,21 @@ const { data: movies, pending, error } = await useAsyncData('popularMovies', () 
 // Fetch trending movies
 const { data: trendingMovies, pending: trendingPending, error: trendingError } = await useAsyncData('trendingMovies', () => fetchTrendingMovies())
 </script>
+
+<style scoped>
+/* Ensure the container stretches to the full screen height and takes space under the header */
+main {
+  min-height: calc(100vh - 4rem); /* Subtracting the header height */
+}
+
+.container {
+  max-width: 1200px;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+</style>

@@ -13,5 +13,9 @@ export default defineNuxtConfig({
     }
   },
 
+  alias: {
+    '~/': './', // This maps `~` to the root of your project
+  },
+
   compatibilityDate: '2025-04-17'
 })
