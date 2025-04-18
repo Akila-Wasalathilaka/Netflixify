@@ -18,7 +18,7 @@
           translate: ['100%', 0, 0]
         }
       }"
-      class="h-97.5 w-full rounded-lg"
+      class="h-[500px] w-full rounded-lg"
     >
       <SwiperSlide v-for="movie in movies" :key="movie.id">
         <NuxtLink :to="`/movies/${movie.id}`" class="block h-full w-full relative">
