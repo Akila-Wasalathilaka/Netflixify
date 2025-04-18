@@ -74,7 +74,7 @@ export const useTmdb = () => {
       }
     })
   }
-  
+
   const fetchTopRatedTVShows = async (): Promise<MovieListResponse> => {
     return await $fetch(`${baseUrl}/tv/top_rated`, {
       params: {
@@ -84,7 +84,7 @@ export const useTmdb = () => {
       }
     })
   }
-  
+
   const fetchCurrentlyAiringTVShows = async (): Promise<MovieListResponse> => {
     return await $fetch(`${baseUrl}/tv/on_the_air`, {
       params: {
@@ -94,7 +94,16 @@ export const useTmdb = () => {
       }
     })
   }
-  
+
+  const fetchTVShowDetails = async (id: number): Promise<Movie> => {
+    return await $fetch(`${baseUrl}/tv/${id}`, {
+      params: {
+        api_key: apiKey,
+        language: 'en-US',
+        append_to_response: 'videos,credits'
+      }
+    })
+  }
 
   return {
     fetchPopularMovies,
@@ -105,6 +114,7 @@ export const useTmdb = () => {
     fetchNowPlayingMovies,
     fetchPopularTVShows,
     fetchTopRatedTVShows,
-    fetchCurrentlyAiringTVShows
+    fetchCurrentlyAiringTVShows,
+    fetchTVShowDetails
   }
 }
