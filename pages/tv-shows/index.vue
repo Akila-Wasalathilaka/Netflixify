@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white flex flex-col">
+
     <Header />
 
     <main class="flex-1 container mx-auto px-4 py-8">

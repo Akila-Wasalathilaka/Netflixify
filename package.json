@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
     "@nuxtjs/tailwindcss": "^6.13.2",
+    "@nuxtjs/vercel-builder": "^0.25.0",
     "axios": "^1.8.4",
     "lucide-vue-next": "^0.488.0",
     "nuxt": "^3.16.2",
