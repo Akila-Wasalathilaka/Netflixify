@@ -4,9 +4,7 @@
     class="bg-gray-900 border-r border-gray-800 fixed left-0 top-0 h-full z-50 transition-all duration-300 hidden md:block"
     :class="isCollapsed ? 'w-20' : 'w-64'"
   >
-    <!-- Sidebar content remains the same as in your original code -->
     <div class="flex flex-col h-full p-4">
-      <!-- Logo and Toggle -->
       <div class="flex flex-col items-center mb-8">
         <NuxtLink v-if="!isCollapsed" to="/" class="overflow-hidden">
           <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-500 transition-all duration-300">
@@ -20,8 +18,6 @@
           <ChevronLeftIcon class="w-5 h-5 transition-transform" :class="{ 'rotate-180': isCollapsed }" />
         </button>
       </div>
-
-      <!-- Navigation Menu -->
       <nav class="space-y-2 flex-1">
         <div class="flex flex-col items-center space-y-4">
           <NuxtLink
@@ -39,7 +35,6 @@
               {{ link.name }}
             </span>
           </NuxtLink>
-          <!-- Search Icon -->
           <button 
             @click="toggleSearch"
             class="flex flex-col items-center p-3 rounded-lg group transition-colors text-gray-400 hover:text-white hover:bg-gray-800"
@@ -60,23 +55,18 @@
   <!-- Mobile Header Bar -->
   <header class="bg-gray-900 border-b border-gray-800 fixed top-0 left-0 right-0 z-50 md:hidden">
     <div class="flex items-center justify-between px-4 py-3">
-      <!-- Mobile Logo -->
       <NuxtLink to="/" class="overflow-hidden">
         <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-500">
           Neflixify
         </span>
       </NuxtLink>
-      
       <div class="flex items-center space-x-4">
-        <!-- Mobile Search Button -->
         <button 
           @click="toggleSearch"
           class="p-2 text-gray-400 hover:text-white rounded-lg"
         >
           <MagnifyingGlassIcon class="w-6 h-6" />
         </button>
-        
-        <!-- Mobile Hamburger Menu Button -->
         <button 
           @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="p-2 text-gray-400 hover:text-white rounded-lg"
@@ -87,8 +77,6 @@
         </button>
       </div>
     </div>
-    
-    <!-- Mobile Menu Dropdown -->
     <div 
       v-if="isMobileMenuOpen" 
       class="absolute top-full left-0 right-0 bg-gray-900 border-b border-gray-800 py-4 shadow-lg"
@@ -115,7 +103,7 @@
     :class="{
       'md:ml-20': isCollapsed,
       'md:ml-64': !isCollapsed,
-      'mt-16': true, // Add margin top for mobile header
+      'mt-16': true,
     }"
   >
     <!-- Search Overlay with Results -->
@@ -150,35 +138,34 @@
         </div>
 
         <!-- Search Results Grid -->
-        <div v-else-if="searchResults.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div v-else-if="searchResults.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
           <div 
             v-for="item in searchResults" 
             :key="item.id" 
-            class="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
-            @click="navigateToItem(item)"
+            class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
-            <div class="aspect-[2/3] relative">
-              <img 
-                :src="item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '/placeholder-poster.jpg'" 
-                :alt="item.title || item.name"
-                class="w-full h-full object-cover"
-              />
-              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                <div class="flex items-center">
-                  <span class="bg-blue-500 text-xs text-white px-1.5 py-0.5 rounded flex items-center">
-                    <StarIcon class="w-3 h-3 mr-1" />
-                    {{ item.vote_average ? item.vote_average.toFixed(1) : 'N/A' }}
+            <NuxtLink :to="`/${item.media_type}/${item.id}`" class="block group">
+              <div class="aspect-w-2 aspect-h-3 overflow-hidden">
+                <img 
+                  :src="item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750'" 
+                  :alt="item.title || item.name"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <div class="p-4">
+                <h3 class="font-bold text-lg mb-2 truncate">{{ item.title || item.name }}</h3>
+                <div class="flex items-center justify-between">
+                  <span class="text-yellow-400">
+                    {{ (item.vote_average || 0).toFixed(1) }}/10
                   </span>
-                  <span class="text-xs text-gray-300 ml-2">
-                    {{ item.media_type === 'movie' ? '🎬 Movie' : '📺 TV' }}
+                  <span class="text-gray-400 text-sm">
+                    {{ item.release_date || item.first_air_date
+                      ? new Date(item.release_date || item.first_air_date).getFullYear()
+                      : 'N/A' }}
                   </span>
                 </div>
               </div>
-            </div>
-            <div class="p-2">
-              <h3 class="text-sm font-medium text-white truncate">{{ item.title || item.name }}</h3>
-              <p class="text-xs text-gray-400">{{ item.release_date ? item.release_date.substring(0, 4) : (item.first_air_date ? item.first_air_date.substring(0, 4) : 'Unknown') }}</p>
-            </div>
+            </NuxtLink>
           </div>
         </div>
 
@@ -214,7 +201,7 @@ import {
   ChevronLeftIcon,
   XMarkIcon,
   Bars3Icon,
-  StarIcon // Added for ratings
+  StarIcon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -228,25 +215,21 @@ const navLinks = [
   { name: 'Top Rated', path: '/top-rated', icon: ChartBarIcon }
 ]
 
-// Responsive states
 const isCollapsed = ref(true)
 const showSearch = ref(false)
 const isMobileMenuOpen = ref(false)
 
-// Search functionality
 const searchQuery = ref('')
 const searchResults = ref([])
 const isSearching = ref(false)
 const searchInput = ref(null)
 const searchDebounceTimeout = ref(null)
 
-// Common popular searches
 const popularSearchTerms = [
   'Action', 'Comedy', 'Sci-Fi', 'Drama', 'Horror',
   'Marvel', 'DC', 'Star Wars', 'Thriller', 'Animation'
 ]
 
-// TMDB API search function
 const searchTMDB = async (query) => {
   if (!query || query.trim() === '') {
     return []
@@ -255,7 +238,6 @@ const searchTMDB = async (query) => {
   isSearching.value = true
   
   try {
-    // Call the TMDB multi-search endpoint to get movies and TV shows
     const response = await fetch(
       `${config.public.tmdbBaseUrl}/search/multi?api_key=${config.public.tmdbApiKey}&query=${encodeURIComponent(query)}`
     )
@@ -266,7 +248,6 @@ const searchTMDB = async (query) => {
     
     const data = await response.json()
     
-    // Filter to only include movies and TV shows (exclude people and other types)
     const results = data.results.filter(item => 
       item.media_type === 'movie' || item.media_type === 'tv'
     )
@@ -280,14 +261,11 @@ const searchTMDB = async (query) => {
   }
 }
 
-// Handle search with debounce
 const handleSearch = () => {
-  // Clear previous timeout
   if (searchDebounceTimeout.value) {
     clearTimeout(searchDebounceTimeout.value)
   }
   
-  // Set new timeout to avoid excessive API calls
   searchDebounceTimeout.value = setTimeout(async () => {
     if (searchQuery.value.trim() !== '') {
       const results = await searchTMDB(searchQuery.value)
@@ -298,65 +276,49 @@ const handleSearch = () => {
   }, 300)
 }
 
-// Navigate to movie/show details
 const navigateToItem = (item) => {
-  // Close search overlay
   showSearch.value = false
-  
-  // Navigate to appropriate page
-  if (item.media_type === 'movie') {
-    router.push(`/movies/${item.id}`)
-  } else {
-    router.push(`/tv-shows/${item.id}`)
-  }
+  router.push(`/${item.media_type}/${item.id}`)
 }
 
 const toggleSearch = () => {
   showSearch.value = !showSearch.value
   
-  // Focus search input when opened
   if (showSearch.value) {
     nextTick(() => {
       searchInput.value?.focus()
     })
   } else {
-    // Clear search when closing
     searchQuery.value = ''
     searchResults.value = []
   }
   
-  // Close mobile menu if open
   if (isMobileMenuOpen.value) {
     isMobileMenuOpen.value = false
   }
 }
 
-// Close search on escape key
 const handleKeyDown = (event) => {
   if (event.key === 'Escape' && showSearch.value) {
     toggleSearch()
   }
 }
 
-// Close mobile menu when screen size changes to desktop
 const handleResize = () => {
   if (window.innerWidth >= 768 && isMobileMenuOpen.value) {
     isMobileMenuOpen.value = false
   }
 }
 
-// Add resize and keydown event listeners
 onMounted(() => {
   window.addEventListener('resize', handleResize)
   window.addEventListener('keydown', handleKeyDown)
 })
 
-// Clean up event listeners
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('keydown', handleKeyDown)
   
-  // Clear any pending timeout
   if (searchDebounceTimeout.value) {
     clearTimeout(searchDebounceTimeout.value)
   }
@@ -364,18 +326,15 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* Smooth transitions for collapsed state */
 .aside {
   transition-property: width;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Hide scrollbar but keep functionality */
 ::-webkit-scrollbar {
   display: none;
 }
 
-/* Mobile menu transition */
 .mobile-menu-enter-active,
 .mobile-menu-leave-active {
   transition: opacity 0.3s, transform 0.3s;
@@ -387,7 +346,6 @@ onUnmounted(() => {
   transform: translateY(-10px);
 }
 
-/* Search results animations */
 .search-results-enter-active,
 .search-results-leave-active {
   transition: opacity 0.3s;
