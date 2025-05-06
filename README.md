@@ -4,7 +4,7 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 
 #live demo
 
-link-(https://netlify-beta.netlify.app/)
+link- https://netlify-beta.netlify.app/
 
 ## Setup
 
